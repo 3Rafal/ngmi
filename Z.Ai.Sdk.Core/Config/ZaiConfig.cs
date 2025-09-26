@@ -37,7 +37,6 @@ public record ZaiConfig(
     private const string EnvWriteTimeout = "ZAI_WRITE_TIMEOUT";
 
     // Default values
-    private const string ZaiBaseUrl = "https://api.z.ai/api/paas/v4/";
     private const int DefaultExpireMillis = 30 * 60 * 1000;
     private const string DefaultAlg = "HS256";
     private const int DefaultConnectionPoolMaxIdle = 5;
@@ -53,7 +52,7 @@ public record ZaiConfig(
     public string BaseUrl =>
         baseUrl ??
         Environment.GetEnvironmentVariable(EnvBaseUrl) ??
-        ZaiBaseUrl;
+        Constants.ZAiBaseUrl;
 
     /// <summary>
     /// Gets the combined API key with environment variable fallback.

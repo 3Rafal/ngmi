@@ -52,7 +52,7 @@ This phase focuses on setting up the solution structure and porting the core com
     flexible and clean object initialization, which replaces the need for a separate
     builder pattern.
 
-### [ ] Step 1.4: Port Constants
+### [x] Step 1.4: Port Constants
 
 1.  Create a `Constants.cs` file in `Z.Ai.Sdk.Core`.
 2.  Define a static `Constants` class.
