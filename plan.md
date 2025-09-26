@@ -2,6 +2,8 @@
 
 This document outlines a detailed plan for rewriting the `z-ai-sdk-java` project to a .NET equivalent. The target framework is .NET 9.
 
+Before each step, check z-ai-sdk-java project directory and confirm what needs to be done.
+
 ## Phase 1: Project Setup and Core Infrastructure
 
 This phase focuses on setting up the solution structure and porting the core components that are fundamental to the SDK's operation.
@@ -26,7 +28,7 @@ This phase focuses on setting up the solution structure and porting the core com
     *   Target Framework: `net9.0`
     *   Add a project reference to `Z.Ai.Sdk.Core`.
 
-### [ ] Step 1.2: Add NuGet Packages to `Z.Ai.Sdk.Core`
+### [x] Step 1.2: Add NuGet Packages to `Z.Ai.Sdk.Core`
 
 1.  **Refit:** For declarative, type-safe REST API calls.
     *   `Refit`
@@ -41,7 +43,7 @@ This phase focuses on setting up the solution structure and porting the core com
 5.  **System.Reactive:** For reactive extensions (if we decide to port RxJava parts directly).
     *   `System.Reactive`
 
-### [ ] Step 1.3: Port Configuration (ZaiConfig)
+### [x] Step 1.3: Port Configuration (ZaiConfig)
 
 1. Create a ZaiConfig.cs file in Z.Ai.Sdk.Core/Config.
 2. Define ZaiConfig as a C# record with properties corresponding to the fields in the
