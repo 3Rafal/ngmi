@@ -6,7 +6,7 @@ This document outlines a detailed plan for rewriting the `z-ai-sdk-java` project
 
 This phase focuses on setting up the solution structure and porting the core components that are fundamental to the SDK's operation.
 
-### [ ] Step 1.1: Solution and Project Setup
+### [x] Step 1.1: Solution and Project Setup
 
 1.  **Create a new .NET Solution:**
     *   Name: `Z.Ai.Sdk`
