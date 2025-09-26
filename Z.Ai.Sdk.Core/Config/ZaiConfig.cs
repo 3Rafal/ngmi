@@ -6,21 +6,21 @@ namespace Z.Ai.Sdk.Core.Config;
 /// environment variables with memory values taking priority.
 /// </summary>
 public record ZaiConfig(
-    string? BaseUrl = null,
-    string? ApiKey = null,
-    string? ApiId = null,
-    string? ApiSecret = null,
-    IReadOnlyDictionary<string, string>? CustomHeaders = null,
-    int ExpireMillis = 30 * 60 * 1000,
-    string Alg = "HS256",
-    bool DisableTokenCache = false,
-    int ConnectionPoolMaxIdleConnections = 5,
-    long ConnectionPoolKeepAliveDuration = 1,
-    int RequestTimeOut = 300,
-    int ConnectTimeout = 100,
-    int ReadTimeout = 100,
-    int WriteTimeout = 100,
-    string SourceChannel = "dotnet-sdk"
+    string? baseUrl = null,
+    string? apiKey = null,
+    string? apiId = null,
+    string? apiSecret = null,
+    IReadOnlyDictionary<string, string>? customHeaders = null,
+    int? expireMillis = null,
+    string? alg = null,
+    bool? disableTokenCache = null,
+    int? connectionPoolMaxIdleConnections = null,
+    long? connectionPoolKeepAliveDuration = null,
+    int? requestTimeOut = null,
+    int? connectTimeout = null,
+    int? readTimeout = null,
+    int? writeTimeout = null,
+    string sourceChannel = "dotnet-sdk"
 )
 {
     // Environment variable names
@@ -36,228 +36,121 @@ public record ZaiConfig(
     private const string EnvReadTimeout = "ZAI_READ_TIMEOUT";
     private const string EnvWriteTimeout = "ZAI_WRITE_TIMEOUT";
 
-    // Default base URL from Z.AI API
+    // Default values
     private const string ZaiBaseUrl = "https://api.z.ai/api/paas/v4/";
+    private const int DefaultExpireMillis = 30 * 60 * 1000;
+    private const string DefaultAlg = "HS256";
+    private const int DefaultConnectionPoolMaxIdle = 5;
+    private const long DefaultConnectionPoolKeepAlive = 1;
+    private const int DefaultRequestTimeout = 300;
+    private const int DefaultConnectTimeout = 100;
+    private const int DefaultReadTimeout = 100;
+    private const int DefaultWriteTimeout = 100;
 
     /// <summary>
     /// Gets the base URL for API endpoints with environment variable fallback.
     /// </summary>
-    public string EffectiveBaseUrl =>
-        BaseUrl ??
+    public string BaseUrl =>
+        baseUrl ??
         Environment.GetEnvironmentVariable(EnvBaseUrl) ??
         ZaiBaseUrl;
 
     /// <summary>
     /// Gets the combined API key with environment variable fallback.
     /// </summary>
-    public string EffectiveApiKey
-    {
-        get
-        {
-            if (!string.IsNullOrEmpty(ApiKey))
-                return ApiKey;
-
-            var envValue = Environment.GetEnvironmentVariable(EnvApiKey);
-            if (!string.IsNullOrEmpty(envValue))
-                return envValue;
-
-            return ApiKey ?? string.Empty;
-        }
-    }
+    public string ApiKey =>
+        !string.IsNullOrEmpty(apiKey)
+            ? apiKey
+            : Environment.GetEnvironmentVariable(EnvApiKey) ?? string.Empty;
 
     /// <summary>
     /// Gets the API ID component with environment variable fallback.
     /// </summary>
-    public string EffectiveApiId
-    {
-        get
-        {
-            if (!string.IsNullOrEmpty(ApiId))
-                return ApiId;
-
-            var apiKey = EffectiveApiKey;
-            if (string.IsNullOrEmpty(apiKey))
-                return string.Empty;
-
-            var parts = apiKey.Split('.');
-            return parts.Length >= 2 ? parts[0] : string.Empty;
-        }
-    }
+    public string ApiId =>
+        !string.IsNullOrEmpty(apiId) ? apiId :
+        !string.IsNullOrEmpty(ApiKey) && ApiKey.Contains('.') ? ApiKey.Split('.')[0] :
+        string.Empty;
 
     /// <summary>
     /// Gets the API secret component with environment variable fallback.
     /// </summary>
-    public string EffectiveApiSecret
-    {
-        get
-        {
-            if (!string.IsNullOrEmpty(ApiSecret))
-                return ApiSecret;
+    public string ApiSecret =>
+        !string.IsNullOrEmpty(apiSecret) ? apiSecret :
+        !string.IsNullOrEmpty(ApiKey) && ApiKey.Contains('.') ? ApiKey.Split('.')[1] :
+        string.Empty;
 
-            var apiKey = EffectiveApiKey;
-            if (string.IsNullOrEmpty(apiKey))
-                return string.Empty;
-
-            var parts = apiKey.Split('.');
-            return parts.Length >= 2 ? parts[1] : string.Empty;
-        }
-    }
+    /// <summary>
+    /// Gets custom HTTP request headers.
+    /// </summary>
+    public IReadOnlyDictionary<string, string>? CustomHeaders => customHeaders;
 
     /// <summary>
     /// Gets the token expiration time in milliseconds with environment variable fallback.
     /// </summary>
-    public int EffectiveExpireMillis
-    {
-        get
-        {
-            if (ExpireMillis != 30 * 60 * 1000)
-                return ExpireMillis;
-
-            var envValue = Environment.GetEnvironmentVariable(EnvExpireMillis);
-            if (int.TryParse(envValue, out var parsedValue))
-                return parsedValue;
-
-            return ExpireMillis;
-        }
-    }
+    public int ExpireMillis =>
+        expireMillis ??
+        (int.TryParse(Environment.GetEnvironmentVariable(EnvExpireMillis), out var envExpire) ? envExpire : DefaultExpireMillis);
 
     /// <summary>
     /// Gets the JWT algorithm with environment variable fallback.
     /// </summary>
-    public string EffectiveAlg
-    {
-        get
-        {
-            if (Alg != "HS256")
-                return Alg;
-
-            var envValue = Environment.GetEnvironmentVariable(EnvAlg);
-            return envValue ?? Alg;
-        }
-    }
+    public string Alg =>
+        alg ??
+        Environment.GetEnvironmentVariable(EnvAlg) ?? DefaultAlg;
 
     /// <summary>
     /// Gets the disable token cache flag with environment variable fallback.
     /// </summary>
-    public bool EffectiveDisableTokenCache
-    {
-        get
-        {
-            if (DisableTokenCache)
-                return true;
-
-            var envValue = Environment.GetEnvironmentVariable(EnvDisableTokenCache);
-            return bool.Parse(envValue ?? "false");
-        }
-    }
+    public bool DisableTokenCache =>
+        disableTokenCache ??
+        (bool.TryParse(Environment.GetEnvironmentVariable(EnvDisableTokenCache), out var envDisable) ? envDisable : false);
 
     /// <summary>
     /// Gets the connection pool max idle connections with environment variable fallback.
     /// </summary>
-    public int EffectiveConnectionPoolMaxIdleConnections
-    {
-        get
-        {
-            if (ConnectionPoolMaxIdleConnections != 5)
-                return ConnectionPoolMaxIdleConnections;
-
-            var envValue = Environment.GetEnvironmentVariable(EnvConnectionPoolMaxIdle);
-            if (int.TryParse(envValue, out var parsedValue))
-                return parsedValue;
-
-            return ConnectionPoolMaxIdleConnections;
-        }
-    }
+    public int ConnectionPoolMaxIdleConnections =>
+        connectionPoolMaxIdleConnections ??
+        (int.TryParse(Environment.GetEnvironmentVariable(EnvConnectionPoolMaxIdle), out var envMaxIdle) ? envMaxIdle : DefaultConnectionPoolMaxIdle);
 
     /// <summary>
     /// Gets the connection pool keep alive duration with environment variable fallback.
     /// </summary>
-    public long EffectiveConnectionPoolKeepAliveDuration
-    {
-        get
-        {
-            if (ConnectionPoolKeepAliveDuration != 1)
-                return ConnectionPoolKeepAliveDuration;
-
-            var envValue = Environment.GetEnvironmentVariable(EnvConnectionPoolKeepAlive);
-            if (long.TryParse(envValue, out var parsedValue))
-                return parsedValue;
-
-            return ConnectionPoolKeepAliveDuration;
-        }
-    }
+    public long ConnectionPoolKeepAliveDuration =>
+        connectionPoolKeepAliveDuration ??
+        (long.TryParse(Environment.GetEnvironmentVariable(EnvConnectionPoolKeepAlive), out var envKeepAlive) ? envKeepAlive : DefaultConnectionPoolKeepAlive);
 
     /// <summary>
     /// Gets the request timeout with environment variable fallback.
     /// </summary>
-    public int EffectiveRequestTimeout
-    {
-        get
-        {
-            if (RequestTimeOut != 300)
-                return RequestTimeOut;
-
-            var envValue = Environment.GetEnvironmentVariable(EnvRequestTimeout);
-            if (int.TryParse(envValue, out var parsedValue))
-                return parsedValue;
-
-            return RequestTimeOut;
-        }
-    }
+    public int RequestTimeOut =>
+        requestTimeOut ??
+        (int.TryParse(Environment.GetEnvironmentVariable(EnvRequestTimeout), out var envRequestTimeout) ? envRequestTimeout : DefaultRequestTimeout);
 
     /// <summary>
     /// Gets the connect timeout with environment variable fallback.
     /// </summary>
-    public int EffectiveConnectTimeout
-    {
-        get
-        {
-            if (ConnectTimeout != 100)
-                return ConnectTimeout;
-
-            var envValue = Environment.GetEnvironmentVariable(EnvConnectTimeout);
-            if (int.TryParse(envValue, out var parsedValue))
-                return parsedValue;
-
-            return ConnectTimeout;
-        }
-    }
+    public int ConnectTimeout =>
+        connectTimeout ??
+        (int.TryParse(Environment.GetEnvironmentVariable(EnvConnectTimeout), out var envConnectTimeout) ? envConnectTimeout : DefaultConnectTimeout);
 
     /// <summary>
     /// Gets the read timeout with environment variable fallback.
     /// </summary>
-    public int EffectiveReadTimeout
-    {
-        get
-        {
-            if (ReadTimeout != 100)
-                return ReadTimeout;
-
-            var envValue = Environment.GetEnvironmentVariable(EnvReadTimeout);
-            if (int.TryParse(envValue, out var parsedValue))
-                return parsedValue;
-
-            return ReadTimeout;
-        }
-    }
+    public int ReadTimeout =>
+        readTimeout ??
+        (int.TryParse(Environment.GetEnvironmentVariable(EnvReadTimeout), out var envReadTimeout) ? envReadTimeout : DefaultReadTimeout);
 
     /// <summary>
     /// Gets the write timeout with environment variable fallback.
     /// </summary>
-    public int EffectiveWriteTimeout
-    {
-        get
-        {
-            if (WriteTimeout != 100)
-                return WriteTimeout;
+    public int WriteTimeout =>
+        writeTimeout ??
+        (int.TryParse(Environment.GetEnvironmentVariable(EnvWriteTimeout), out var envWriteTimeout) ? envWriteTimeout : DefaultWriteTimeout);
 
-            var envValue = Environment.GetEnvironmentVariable(EnvWriteTimeout);
-            if (int.TryParse(envValue, out var parsedValue))
-                return parsedValue;
-
-            return WriteTimeout;
-        }
-    }
+    /// <summary>
+    /// Gets the source channel identifier for request tracking.
+    /// </summary>
+    public string SourceChannel => sourceChannel;
 
     /// <summary>
     /// Creates a new ZaiConfig with the specified API key.
@@ -275,9 +168,9 @@ public record ZaiConfig(
             throw new ArgumentException("API key must be in format {apiId}.{apiSecret}", nameof(apiKey));
 
         return new ZaiConfig(
-            ApiKey: apiKey,
-            ApiId: parts[0],
-            ApiSecret: parts[1]
+            apiKey: apiKey,
+            apiId: parts[0],
+            apiSecret: parts[1]
         );
     }
 }
