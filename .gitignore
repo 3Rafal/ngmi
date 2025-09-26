@@ -4,6 +4,7 @@
 ## Get latest from `dotnet new gitignore`
 
 /z-ai-sdk-java
+.claude
 
 # dotenv files
 .env
