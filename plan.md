@@ -41,11 +41,14 @@ This phase focuses on setting up the solution structure and porting the core com
 5.  **System.Reactive:** For reactive extensions (if we decide to port RxJava parts directly).
     *   `System.Reactive`
 
-### [ ] Step 1.3: Port Configuration (`ZaiConfig`)
+### [ ] Step 1.3: Port Configuration (ZaiConfig)
 
-1.  Create a `ZaiConfig.cs` file in `Z.Ai.Sdk.Core/Config`.
-2.  Define the `ZaiConfig` class with properties corresponding to the Java version. Use .NET 9 features like primary constructors and records where appropriate.
-3.  Implement a builder pattern for `ZaiConfig` if desired, although with modern C# features, it might not be necessary.
+1. Create a ZaiConfig.cs file in Z.Ai.Sdk.Core/Config.
+2. Define ZaiConfig as a C# record with properties corresponding to the fields in the
+    original Java ZaiConfig class.
+3. Utilize primary constructors and optional parameters with default values to allow for
+    flexible and clean object initialization, which replaces the need for a separate
+    builder pattern.
 
 ### [ ] Step 1.4: Port Constants
 
