@@ -1,4 +1,4 @@
-namespace Z.Ai.Sdk.Core.Models;
+namespace Z.Ai.Sdk.Core.Model;
 
 /// <summary>
 /// Marker interface for client requests. Can be extended to provide

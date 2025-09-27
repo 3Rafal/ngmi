@@ -1,4 +1,4 @@
-namespace Z.Ai.Sdk.Core.Models;
+namespace Z.Ai.Sdk.Core.Model;
 
 /// <summary>
 /// Represents an error that occurred during API operations. Contains error code and

@@ -1,4 +1,4 @@
-namespace Z.Ai.Sdk.Core.Models;
+namespace Z.Ai.Sdk.Core.Model;
 
 /// <summary>
 /// A client response that supports an asynchronous stream with separate body type and

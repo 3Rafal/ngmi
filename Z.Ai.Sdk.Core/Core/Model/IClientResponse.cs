@@ -1,4 +1,4 @@
-namespace Z.Ai.Sdk.Core.Models;
+namespace Z.Ai.Sdk.Core.Model;
 
 /// <summary>
 /// Base interface for client responses containing response data, status information,
