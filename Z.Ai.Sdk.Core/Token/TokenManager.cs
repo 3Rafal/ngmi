@@ -50,7 +50,7 @@ public class TokenManager(ICache cache)
     /// Creates JWT token using HMAC256 algorithm.
     /// </summary>
     /// <param name="config">Z.AI configuration</param>
-    /// <returns>JWT token string or null if creation fails</returns>
+    /// <returns>JWT token string</returns>
     public static string CreateJwt(ZaiConfig config)
     {
         if (config.Alg != "HS256")
