@@ -1,6 +1,6 @@
 using System;
 
-namespace Z.Ai.Sdk.Core;
+namespace Z.Ai.Sdk.Core.Service.Model;
 
 /// <summary>
 /// Exception class for Z.AI API errors that includes error code, message, and HTTP status.

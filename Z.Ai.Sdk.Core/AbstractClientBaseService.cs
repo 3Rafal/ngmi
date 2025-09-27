@@ -1,6 +1,7 @@
 using System;
 using System.Text.Json;
 using Z.Ai.Sdk.Core.Model;
+using Z.Ai.Sdk.Core.Service.Model;
 
 namespace Z.Ai.Sdk.Core;
 

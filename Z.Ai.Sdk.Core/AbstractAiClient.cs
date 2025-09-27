@@ -3,6 +3,7 @@ using Z.Ai.Sdk.Core.Config;
 using Z.Ai.Sdk.Core.Http;
 using Z.Ai.Sdk.Core.Model;
 using Z.Ai.Sdk.Core.Service;
+using Z.Ai.Sdk.Core.Service.Model;
 
 namespace Z.Ai.Sdk.Core;
 
