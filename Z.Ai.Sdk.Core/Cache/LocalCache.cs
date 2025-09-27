@@ -9,7 +9,7 @@ namespace Z.Ai.Sdk.Core.Cache;
 public class LocalCache : ICache
 {
     private static readonly ConcurrentDictionary<string, CacheValue> Cache = new();
-    private static readonly Lazy<LocalCache> Instance = new(() => new LocalCache());
+    private static readonly LocalCache Instance = new();
 
     private LocalCache()
     {
@@ -18,7 +18,7 @@ public class LocalCache : ICache
     /// <summary>
     /// Gets singleton instance of LocalCache.
     /// </summary>
-    public static LocalCache GetInstance() => Instance.Value;
+    public static LocalCache GetInstance() => Instance;
 
     /// <summary>
     /// Retrieves cached value by key.
