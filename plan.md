@@ -2,7 +2,7 @@
 
 This document outlines a detailed plan for rewriting the `z-ai-sdk-java` project to a .NET equivalent. The target framework is .NET 9.
 
-Before each step, check z-ai-sdk-java project directory and confirm what needs to be done.
+Before each step, check z-ai-sdk-java project directory that can be found in this directory, and confirm what needs to be done.
 
 ## Phase 1: Project Setup and Core Infrastructure
 
@@ -58,20 +58,20 @@ This phase focuses on setting up the solution structure and porting the core com
 2.  Define a static `Constants` class.
 3.  Port all constants from `Constants.java` to `Constants.cs`.
 
-### [ ] Step 1.5: Port HTTP Client and Interceptor
+### [x] Step 1.5: Port HTTP Client and Interceptor
 
 1.  Create an `AuthenticationHeaderHandler.cs` that inherits from `DelegatingHandler`. This will be the equivalent of `HttpRequestInterceptor.java`.
 2.  This handler will be responsible for adding the `Authorization` header to each request. It will use a `TokenManager` to get the token.
 3.  Configure `HttpClientFactory` to create `HttpClient` instances with this handler.
 
-### [ ] Step 1.6: Port Token Management
+### [x] Step 1.6: Port Token Management
 
 1.  Create an `ITokenManager.cs` interface.
 2.  Create a `GlobalTokenManager.cs` implementation that handles JWT generation and caching.
 3.  Use `System.IdentityModel.Tokens.Jwt` for JWT creation.
 4.  Implement a simple in-memory cache for tokens, or use `IMemoryCache` from `Microsoft.Extensions.Caching.Memory`.
 
-### [ ] Step 1.7: Port Core Models
+### [x] Step 1.7: Port Core Models
 
 1.  Create `ClientRequest.cs`, `ClientResponse.cs`, `StreamableClientResponse.cs` in `Z.Ai.Sdk.Core/Models`.
 2.  These will be generic classes to standardize request and response handling. For streaming, `IAsyncEnumerable<T>` will be used instead of `Flowable`.
