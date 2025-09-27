@@ -27,6 +27,7 @@ public abstract class AbstractAiClient : AbstractClientBaseService, IDisposable
     private readonly ZaiConfig _config;
     private readonly HttpClient _httpClient;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
+    private readonly string _baseUrl;
 
     // Service instances - lazily initialized for thread safety and performance
     private IAgentService? _agentService;
@@ -49,7 +50,8 @@ public abstract class AbstractAiClient : AbstractClientBaseService, IDisposable
     /// <param name="baseUrl">Base URL for the API endpoint</param>
     protected AbstractAiClient(ZaiConfig config, string baseUrl)
     {
-        _config = config ?? throw new ArgumentNullException(nameof(config));
+        _config = config;
+        _baseUrl = baseUrl;
         _httpClient = CreateHttpClient(config);
         _jsonSerializerOptions = CreateJsonSerializerOptions();
     }
@@ -152,6 +154,29 @@ public abstract class AbstractAiClient : AbstractClientBaseService, IDisposable
     public HttpClient GetHttpClient()
     {
         return _httpClient;
+    }
+
+    /// <summary>
+    /// Creates a Refit service instance for the specified API interface type. This method is
+    /// primarily intended for internal use by service implementations and advanced users who need
+    /// direct access to Refit-generated API clients.
+    /// </summary>
+    /// <typeparam name="T">The API interface type</typeparam>
+    /// <returns>A configured Refit service instance</returns>
+    public T CreateRefitService<T>() where T : class
+    {
+        return RefitServiceFactory.Create<T>(_config, _baseUrl);
+    }
+
+    /// <summary>
+    /// Creates a Refit service instance for streaming operations. This method is optimized for
+    /// Server-Sent Events (SSE) and other streaming API operations.
+    /// </summary>
+    /// <typeparam name="T">The API interface type</typeparam>
+    /// <returns>A configured Refit service instance for streaming</returns>
+    public T CreateRefitStreamingService<T>() where T : class
+    {
+        return RefitServiceFactory.CreateForStreaming<T>(_config, _baseUrl);
     }
 
     // ==================== Core Request Execution Methods ====================
