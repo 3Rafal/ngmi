@@ -4,6 +4,17 @@ using Z.Ai.Sdk.Core.Http;
 using Z.Ai.Sdk.Core.Model;
 using Z.Ai.Sdk.Core.Service;
 using Z.Ai.Sdk.Core.Service.Model;
+using Z.Ai.Sdk.Core.Services.Agents;
+using Z.Ai.Sdk.Core.Services.Assistant;
+using Z.Ai.Sdk.Core.Services.Audio;
+using Z.Ai.Sdk.Core.Services.Batches;
+using Z.Ai.Sdk.Core.Services.Chat;
+using Z.Ai.Sdk.Core.Services.Embedding;
+using Z.Ai.Sdk.Core.Services.File;
+using Z.Ai.Sdk.Core.Services.Images;
+using Z.Ai.Sdk.Core.Services.Videos;
+using Z.Ai.Sdk.Core.Services.VoiceClone;
+using Z.Ai.Sdk.Core.Services.WebSearch;
 
 namespace Z.Ai.Sdk.Core;
 
@@ -21,13 +32,12 @@ public abstract class AbstractAiClient : AbstractClientBaseService, IDisposable
     private IAgentService? _agentService;
     private IAssistantService? _assistantService;
     private IAudioService? _audioService;
-    private IBatchService? _batchService;
+    private IBatchesService? _batchesService;
     private IChatService? _chatService;
     private IEmbeddingService? _embeddingService;
     private IFileService? _fileService;
     private IImageService? _imageService;
-    private IToolsService? _toolsService;
-    private IVideosService? _videosService;
+    private IVideoService? _videoService;
     private IVoiceCloneService? _voiceCloneService;
     private IWebSearchService? _webSearchService;
 
@@ -63,62 +73,57 @@ public abstract class AbstractAiClient : AbstractClientBaseService, IDisposable
     /// <summary>
     /// Gets the agent service for AI agent management.
     /// </summary>
-    public IAgentService AgentService => GetOrCreateService(ref _agentService, () => CreateAgentService());
+    public IAgentService Agents() => GetOrCreateService(ref _agentService, () => new AgentService(this));
 
     /// <summary>
     /// Gets the assistant service for AI assistant management.
     /// </summary>
-    public IAssistantService AssistantService => GetOrCreateService(ref _assistantService, () => CreateAssistantService());
+    public IAssistantService Assistants() => GetOrCreateService(ref _assistantService, () => new AssistantService(this));
 
     /// <summary>
     /// Gets the audio service for audio processing.
     /// </summary>
-    public IAudioService AudioService => GetOrCreateService(ref _audioService, () => CreateAudioService());
+    public IAudioService Audio() => GetOrCreateService(ref _audioService, () => new AudioService(this));
 
     /// <summary>
     /// Gets the batch service for batch processing.
     /// </summary>
-    public IBatchService BatchService => GetOrCreateService(ref _batchService, () => CreateBatchService());
+    public IBatchesService Batches() => GetOrCreateService(ref _batchesService, () => new BatchesService(this));
 
     /// <summary>
     /// Gets the chat service for conversational AI.
     /// </summary>
-    public IChatService ChatService => GetOrCreateService(ref _chatService, () => CreateChatService());
+    public IChatService Chat() => GetOrCreateService(ref _chatService, () => new ChatService(this));
 
     /// <summary>
     /// Gets the embedding service for text embeddings.
     /// </summary>
-    public IEmbeddingService EmbeddingService => GetOrCreateService(ref _embeddingService, () => CreateEmbeddingService());
+    public IEmbeddingService Embeddings() => GetOrCreateService(ref _embeddingService, () => new EmbeddingService(this));
 
     /// <summary>
     /// Gets the file service for file management.
     /// </summary>
-    public IFileService FileService => GetOrCreateService(ref _fileService, () => CreateFileService());
+    public IFileService Files() => GetOrCreateService(ref _fileService, () => new FileService(this));
 
     /// <summary>
     /// Gets the image service for image processing.
     /// </summary>
-    public IImageService ImageService => GetOrCreateService(ref _imageService, () => CreateImageService());
-
-    /// <summary>
-    /// Gets the tools service for tool management.
-    /// </summary>
-    public IToolsService ToolsService => GetOrCreateService(ref _toolsService, () => CreateToolsService());
+    public IImageService GetImages() => GetOrCreateService(ref _imageService, () => new ImageService(this));
 
     /// <summary>
     /// Gets the videos service for video processing.
     /// </summary>
-    public IVideosService VideosService => GetOrCreateService(ref _videosService, () => CreateVideosService());
+    public IVideoService Videos() => GetOrCreateService(ref _videoService, () => new VideoService(this));
 
     /// <summary>
     /// Gets the voice clone service for voice cloning.
     /// </summary>
-    public IVoiceCloneService VoiceCloneService => GetOrCreateService(ref _voiceCloneService, () => CreateVoiceCloneService());
+    public IVoiceCloneService VoiceClone() => GetOrCreateService(ref _voiceCloneService, () => new VoiceCloneService(this));
 
     /// <summary>
     /// Gets the web search service for internet search.
     /// </summary>
-    public IWebSearchService WebSearchService => GetOrCreateService(ref _webSearchService, () => CreateWebSearchService());
+    public IWebSearchService WebSearch() => GetOrCreateService(ref _webSearchService, () => new WebSearchService(this));
 
     // Helper method for thread-safe service creation
     private static T GetOrCreateService<T>(ref T? serviceField, Func<T> factory) where T : class
@@ -313,79 +318,7 @@ public abstract class AbstractAiClient : AbstractClientBaseService, IDisposable
         }
     }
 
-    // Abstract factory methods for creating services
-    /// <summary>
-    /// Creates the agent service implementation.
-    /// </summary>
-    /// <returns>Agent service instance</returns>
-    protected abstract IAgentService CreateAgentService();
-
-    /// <summary>
-    /// Creates the assistant service implementation.
-    /// </summary>
-    /// <returns>Assistant service instance</returns>
-    protected abstract IAssistantService CreateAssistantService();
-
-    /// <summary>
-    /// Creates the audio service implementation.
-    /// </summary>
-    /// <returns>Audio service instance</returns>
-    protected abstract IAudioService CreateAudioService();
-
-    /// <summary>
-    /// Creates the batch service implementation.
-    /// </summary>
-    /// <returns>Batch service instance</returns>
-    protected abstract IBatchService CreateBatchService();
-
-    /// <summary>
-    /// Creates the chat service implementation.
-    /// </summary>
-    /// <returns>Chat service instance</returns>
-    protected abstract IChatService CreateChatService();
-
-    /// <summary>
-    /// Creates the embedding service implementation.
-    /// </summary>
-    /// <returns>Embedding service instance</returns>
-    protected abstract IEmbeddingService CreateEmbeddingService();
-
-    /// <summary>
-    /// Creates the file service implementation.
-    /// </summary>
-    /// <returns>File service instance</returns>
-    protected abstract IFileService CreateFileService();
-
-    /// <summary>
-    /// Creates the image service implementation.
-    /// </summary>
-    /// <returns>Image service instance</returns>
-    protected abstract IImageService CreateImageService();
-
-    /// <summary>
-    /// Creates the tools service implementation.
-    /// </summary>
-    /// <returns>Tools service instance</returns>
-    protected abstract IToolsService CreateToolsService();
-
-    /// <summary>
-    /// Creates the videos service implementation.
-    /// </summary>
-    /// <returns>Videos service instance</returns>
-    protected abstract IVideosService CreateVideosService();
-
-    /// <summary>
-    /// Creates the voice clone service implementation.
-    /// </summary>
-    /// <returns>Voice clone service instance</returns>
-    protected abstract IVoiceCloneService CreateVoiceCloneService();
-
-    /// <summary>
-    /// Creates the web search service implementation.
-    /// </summary>
-    /// <returns>Web search service instance</returns>
-    protected abstract IWebSearchService CreateWebSearchService();
-
+    
     /// <summary>
     /// Closes the AI client and releases all associated resources.
     /// </summary>
