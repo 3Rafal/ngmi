@@ -4,17 +4,17 @@ using Z.Ai.Sdk.Core.Http;
 using Z.Ai.Sdk.Core.Model;
 using Z.Ai.Sdk.Core.Service;
 using Z.Ai.Sdk.Core.Service.Model;
-using Z.Ai.Sdk.Core.Services.Agents;
-using Z.Ai.Sdk.Core.Services.Assistant;
-using Z.Ai.Sdk.Core.Services.Audio;
-using Z.Ai.Sdk.Core.Services.Batches;
-using Z.Ai.Sdk.Core.Services.Chat;
-using Z.Ai.Sdk.Core.Services.Embedding;
-using Z.Ai.Sdk.Core.Services.File;
-using Z.Ai.Sdk.Core.Services.Images;
-using Z.Ai.Sdk.Core.Services.Videos;
-using Z.Ai.Sdk.Core.Services.VoiceClone;
-using Z.Ai.Sdk.Core.Services.WebSearch;
+using Z.Ai.Sdk.Core.Service.Agents;
+using Z.Ai.Sdk.Core.Service.Assistant;
+using Z.Ai.Sdk.Core.Service.Audio;
+using Z.Ai.Sdk.Core.Service.Batches;
+using Z.Ai.Sdk.Core.Service.Chat;
+using Z.Ai.Sdk.Core.Service.Embedding;
+using Z.Ai.Sdk.Core.Service.File;
+using Z.Ai.Sdk.Core.Service.Images;
+using Z.Ai.Sdk.Core.Service.Videos;
+using Z.Ai.Sdk.Core.Service.VoiceClone;
+using Z.Ai.Sdk.Core.Service.WebSearch;
 
 namespace Z.Ai.Sdk.Core;
 
