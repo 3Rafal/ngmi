@@ -45,17 +45,50 @@ dotnet restore
 z-ai-sdk-dotnet/
 ├── Z.Ai.Sdk.Core/                 # Main SDK library
 │   ├── AbstractAiClient.cs        # Base AI client implementation
-│   ├── AbstractClientBaseService.cs # Base service implementation
-│   ├── Config/                    # Configuration classes
-│   │   └── ZaiConfig.cs          # SDK configuration
-│   ├── Http/                      # HTTP client and handlers
-│   ├── Models/                    # Data models for all services
-│   ├── Services/                  # Service implementations
-│   ├── Token/                     # JWT token management
-│   └── Constants.cs              # Application constants
-├── Z.Ai.Sdk.Core.Tests/          # Unit tests
-├── Z.Ai.Sdk.Samples/             # Usage examples
-└── plan.md                       # Detailed implementation plan
+│   ├── Core/                      # Core infrastructure components
+│   │   ├── Cache/                 # Caching system (ICache, LocalCache)
+│   │   ├── Config/                # Configuration (ZaiConfig)
+│   │   ├── Constants.cs           # Application constants
+│   │   ├── Model/                 # Core model interfaces
+│   │   │   ├── IClientRequest.cs
+│   │   │   ├── IClientResponse.cs
+│   │   │   ├── ISingleStreamableClientResponse.cs
+│   │   │   ├── IStreamableClientResponse.cs
+│   │   │   └── ChatError.cs
+│   │   └── Token/                 # JWT token management
+│   │       ├── TokenManager.cs
+│   │       └── GlobalTokenManager.cs
+│   ├── Http/                      # HTTP client infrastructure
+│   │   ├── AuthenticationHeaderHandler.cs
+│   │   ├── RefitServiceFactory.cs
+│   │   └── ZaiHttpClient.cs
+│   ├── Service/                   # Service implementations
+│   │   ├── AbstractClientBaseService.cs
+│   │   ├── Agents/                # Agent service
+│   │   ├── Assistant/             # Assistant service
+│   │   ├── Audio/                 # Audio service
+│   │   ├── Batches/               # Batches service
+│   │   ├── Chat/                  # Chat service
+│   │   ├── Embedding/             # Embedding service
+│   │   ├── File/                  # File service
+│   │   ├── Images/                # Images service
+│   │   ├── Model/                 # Model-specific components
+│   │   │   └── ZaiHttpException.cs
+│   │   ├── Videos/                # Videos service
+│   │   ├── VoiceClone/            # VoiceClone service
+│   │   └── WebSearch/             # WebSearch service
+│   └── Z.Ai.Sdk.Core.csproj      # Project file
+├── Z.Ai.Sdk.Core.Tests/           # Unit tests
+│   ├── UnitTest1.cs               # Basic unit test
+│   └── Z.Ai.Sdk.Core.Tests.csproj # Test project file
+├── Z.Ai.Sdk.Samples/              # Usage examples
+│   ├── Program.cs                 # Sample entry point
+│   └── Z.Ai.Sdk.Samples.csproj    # Sample project file
+├── Z.Ai.Sdk.sln                   # Solution file
+├── CLAUDE.md                      # Project documentation
+├── java.md                        # Java SDK reference
+├── plan.md                        # Implementation plan
+└── refit.md                       # Refit integration guide
 ```
 
 ## Key Dependencies
