@@ -78,7 +78,7 @@ public abstract class AbstractClientBaseService
     /// <param name="apiCall">The API call to execute</param>
     /// <returns>The response from the API call</returns>
     /// <exception cref="ZaiHttpException">If an HTTP error occurs</exception>
-    protected static async Task<T> Execute<T>(Func<Task<T>> apiCall)
+    public static async Task<T> Execute<T>(Func<Task<T>> apiCall)
     {
         try
         {
