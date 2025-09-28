@@ -15,6 +15,7 @@ using Z.Ai.Sdk.Core.Service.Images;
 using Z.Ai.Sdk.Core.Service.Videos;
 using Z.Ai.Sdk.Core.Service.VoiceClone;
 using Z.Ai.Sdk.Core.Service.WebSearch;
+using Microsoft.Extensions.Logging;
 
 namespace Z.Ai.Sdk.Core;
 
@@ -24,6 +25,7 @@ namespace Z.Ai.Sdk.Core;
 /// </summary>
 public abstract class AbstractAiClient : AbstractClientBaseService, IDisposable
 {
+    private readonly ILogger _logger = ZaiLogger.GetLogger<AbstractAiClient>();
     private readonly ZaiConfig _config;
     private readonly HttpClient _httpClient;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
@@ -50,6 +52,7 @@ public abstract class AbstractAiClient : AbstractClientBaseService, IDisposable
     /// <param name="baseUrl">Base URL for the API endpoint</param>
     protected AbstractAiClient(ZaiConfig config, string baseUrl)
     {
+        _logger.LogInformation("ZAI Init the client: {ClassName}, baseUrl: {BaseUrl}", GetType().Name, baseUrl);
         _config = config;
         _baseUrl = baseUrl;
         _httpClient = CreateHttpClient(config);
@@ -214,6 +217,7 @@ public abstract class AbstractAiClient : AbstractClientBaseService, IDisposable
         }
         catch (ZaiHttpException ex)
         {
+            _logger.LogError("API request failed with call error: {Exception}", ex);
             response.Code = ex.StatusCode ?? 500;
             response.Msg = "Call Failed";
             response.Success = false;
@@ -274,6 +278,7 @@ public abstract class AbstractAiClient : AbstractClientBaseService, IDisposable
     /// <param name="ex">The exception that occurred</param>
     private void HandleStreamError(IClientResponse<object> response, ZaiHttpException ex)
     {
+        _logger.LogError("Streaming API request faile with business error: {Exception}", ex);
         response.Code = ex.StatusCode ?? 500;
         response.Msg = "Business error";
         response.Success = false;
