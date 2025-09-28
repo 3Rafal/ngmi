@@ -18,8 +18,8 @@ public class AgentService : IAgentService
     public Task<Model.ChatCompletionResponse> CreateAgentCompletionAsync(AgentsCompletionRequest request)
     {
         ValidateParams(request);
-        return request.Stream == true 
-            ? StreamAgentCompletionAsync(request) 
+        return request.Stream == true
+            ? StreamAgentCompletionAsync(request)
             : SyncAgentCompletionAsync(request);
     }
 

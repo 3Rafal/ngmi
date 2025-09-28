@@ -44,7 +44,7 @@ public abstract class AbstractAiClient : AbstractClientBaseService, IDisposable
     private IVoiceCloneService? _voiceCloneService;
     private IWebSearchService? _webSearchService;
 
-    
+
     /// <summary>
     /// Initializes a new instance of the AbstractAiClient class.
     /// </summary>
@@ -348,7 +348,7 @@ public abstract class AbstractAiClient : AbstractClientBaseService, IDisposable
         }
     }
 
-    
+
     /// <summary>
     /// Closes the AI client and releases all associated resources.
     /// </summary>
@@ -497,7 +497,8 @@ public abstract class AbstractAiClient : AbstractClientBaseService, IDisposable
         /// <returns>This builder instance for method chaining</returns>
         public AbstractBuilder<TClient> NetworkConfig(int requestTimeout, int connectTimeout, int readTimeout, int writeTimeout)
         {
-            Config = Config with {
+            Config = Config with
+            {
                 requestTimeOut = requestTimeout,
                 connectTimeout = connectTimeout,
                 readTimeout = readTimeout,

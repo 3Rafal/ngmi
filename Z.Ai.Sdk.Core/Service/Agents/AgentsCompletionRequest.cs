@@ -39,7 +39,7 @@ public record AgentsCompletionRequest : IClientRequest<AgentsCompletionRequest>
     /// </summary>
     [JsonPropertyName("custom_variables")]
     public JsonObject? CustomVariables { get; init; }
-    
+
     /// <summary>
     /// Request ID
     /// </summary>

@@ -74,7 +74,7 @@ public class TokenManager(ICache cache)
         };
 
         var token = new JwtSecurityToken(
-            header: new JwtHeader(creds) { {"sign_type", "SIGN"} },
+            header: new JwtHeader(creds) { { "sign_type", "SIGN" } },
             payload: new JwtPayload(claims)
         );
 
