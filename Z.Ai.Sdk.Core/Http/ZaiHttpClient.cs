@@ -17,7 +17,11 @@ public static class ZaiHttpClient
         ZaiConfig config,
         Uri? baseAddress = null)
     {
-        var handler = new AuthenticationHeaderHandler(config);
+        var handler = new AuthenticationHeaderHandler(config)
+        {
+            InnerHandler = new HttpClientHandler()
+    };
+
         var httpClient = new HttpClient(handler);
 
         if (baseAddress != null)
