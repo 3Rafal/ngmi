@@ -1,9 +1,7 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Text;
-using Microsoft.IdentityModel.Tokens;
 using Z.Ai.Sdk.Core.Cache;
 using Z.Ai.Sdk.Core.Config;
+using Jose;
 
 namespace Z.Ai.Sdk.Core.Token;
 
@@ -60,25 +58,29 @@ public class TokenManager(ICache cache)
 
         if (string.IsNullOrEmpty(config.ApiSecret))
             throw new ArgumentException("ApiSecret must be provided.", nameof(config));
+        
+        // Derive expiration time in ms
+        var exp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+                + config.ExpireMillis
+                + (long)DelayExpireTime.TotalMilliseconds;
 
-        // Create symmetric key
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.ApiSecret));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
-        // Add payload claims
-        var claims = new List<Claim>
+        var payload = new Dictionary<string, object>
         {
-            new("api_key", config.ApiId),
-            new("exp", (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + config.ExpireMillis + (long)DelayExpireTime.TotalMilliseconds).ToString()),
-            new("timestamp", DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString())
+            { "api_key", config.ApiId },
+            { "exp", exp.ToString() },
+            { "timestamp", timestamp.ToString() }
         };
 
-        var token = new JwtSecurityToken(
-            header: new JwtHeader(creds) { { "sign_type", "SIGN" } },
-            payload: new JwtPayload(claims)
-        );
+        var extraHeaders = new Dictionary<string, object>
+        {
+            { "sign_type", "SIGN" }
+        };
 
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        var secret = Encoding.UTF8.GetBytes(config.ApiSecret);
+
+        return JWT.Encode(payload, secret, JwsAlgorithm.HS256, extraHeaders);
     }
 
     /// <summary>
