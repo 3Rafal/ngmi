@@ -395,7 +395,7 @@ public abstract class AbstractAiClient : AbstractClientBaseService, IDisposable
             if (string.IsNullOrWhiteSpace(apiKey))
                 throw new ArgumentException("API key cannot be null or empty", nameof(apiKey));
 
-            Config = Config with { apiKey = apiKey };
+            Config.ApiKey = apiKey;
         }
 
         /// <summary>
@@ -411,7 +411,8 @@ public abstract class AbstractAiClient : AbstractClientBaseService, IDisposable
             if (string.IsNullOrWhiteSpace(apiKey))
                 throw new ArgumentException("API key cannot be null or empty", nameof(apiKey));
 
-            Config = Config with { baseUrl = baseUrl, apiKey = apiKey };
+            Config.BaseUrl = baseUrl;
+            Config.ApiKey = apiKey;
         }
 
         /// <summary>
@@ -424,7 +425,7 @@ public abstract class AbstractAiClient : AbstractClientBaseService, IDisposable
             if (string.IsNullOrWhiteSpace(baseUrl))
                 throw new ArgumentException("Base URL cannot be null or empty", nameof(baseUrl));
 
-            Config = Config with { baseUrl = baseUrl };
+            Config.BaseUrl = baseUrl;
             return this;
         }
 
@@ -438,7 +439,7 @@ public abstract class AbstractAiClient : AbstractClientBaseService, IDisposable
             if (string.IsNullOrWhiteSpace(apiKey))
                 throw new ArgumentException("API key cannot be null or empty", nameof(apiKey));
 
-            Config = Config with { apiKey = apiKey };
+            Config.ApiKey = apiKey;
             return this;
         }
 
@@ -452,7 +453,7 @@ public abstract class AbstractAiClient : AbstractClientBaseService, IDisposable
             if (customHeaders == null || customHeaders.Count == 0)
                 throw new ArgumentException("Custom headers cannot be null or empty", nameof(customHeaders));
 
-            Config = Config with { customHeaders = customHeaders };
+            Config.CustomHeaders = customHeaders;
             return this;
         }
 
@@ -462,7 +463,7 @@ public abstract class AbstractAiClient : AbstractClientBaseService, IDisposable
         /// <returns>This builder instance for method chaining</returns>
         public AbstractBuilder<TClient> DisableTokenCache()
         {
-            Config = Config with { disableTokenCache = true };
+            Config.DisableTokenCache = true;
             return this;
         }
 
@@ -472,7 +473,7 @@ public abstract class AbstractAiClient : AbstractClientBaseService, IDisposable
         /// <returns>This builder instance for method chaining</returns>
         public AbstractBuilder<TClient> EnableTokenCache()
         {
-            Config = Config with { disableTokenCache = false };
+            Config.DisableTokenCache = false;
             return this;
         }
 
@@ -483,7 +484,7 @@ public abstract class AbstractAiClient : AbstractClientBaseService, IDisposable
         /// <returns>This builder instance for method chaining</returns>
         public AbstractBuilder<TClient> TokenExpire(int expireMillis)
         {
-            Config = Config with { expireMillis = expireMillis };
+            Config.ExpireMillis = expireMillis;
             return this;
         }
 
@@ -497,13 +498,10 @@ public abstract class AbstractAiClient : AbstractClientBaseService, IDisposable
         /// <returns>This builder instance for method chaining</returns>
         public AbstractBuilder<TClient> NetworkConfig(int requestTimeout, int connectTimeout, int readTimeout, int writeTimeout)
         {
-            Config = Config with
-            {
-                requestTimeOut = requestTimeout,
-                connectTimeout = connectTimeout,
-                readTimeout = readTimeout,
-                writeTimeout = writeTimeout
-            };
+            Config.RequestTimeOut = requestTimeout;
+            Config.ConnectTimeout = connectTimeout;
+            Config.ReadTimeout = readTimeout;
+            Config.WriteTimeout = writeTimeout;
             return this;
         }
 

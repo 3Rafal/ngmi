@@ -5,24 +5,25 @@ namespace Z.Ai.Sdk.Core.Config;
 /// configurations, and cache settings. Supports reading configuration values from
 /// environment variables with memory values taking priority.
 /// </summary>
-public record ZaiConfig(
-    string? baseUrl = null,
-    string? apiKey = null,
-    string? apiId = null,
-    string? apiSecret = null,
-    IReadOnlyDictionary<string, string>? customHeaders = null,
-    int? expireMillis = null,
-    string? alg = null,
-    bool? disableTokenCache = null,
-    int? connectionPoolMaxIdleConnections = null,
-    long? connectionPoolKeepAliveDuration = null,
-    int? requestTimeOut = null,
-    int? connectTimeout = null,
-    int? readTimeout = null,
-    int? writeTimeout = null,
-    string sourceChannel = "dotnet-sdk"
-)
+public class ZaiConfig
 {
+    // Backing fields
+    private string? _baseUrl;
+    private string? _apiKey;
+    private string? _apiId;
+    private string? _apiSecret;
+    private IReadOnlyDictionary<string, string>? _customHeaders;
+    private int? _expireMillis;
+    private string? _alg;
+    private bool? _disableTokenCache;
+    private int? _connectionPoolMaxIdleConnections;
+    private long? _connectionPoolKeepAliveDuration;
+    private int? _requestTimeOut;
+    private int? _connectTimeout;
+    private int? _readTimeout;
+    private int? _writeTimeout;
+    private string _sourceChannel = "dotnet-sdk";
+
     // Environment variable names
     private const string EnvBaseUrl = "ZAI_BASE_URL";
     private const string EnvApiKey = "ZAI_API_KEY";
@@ -47,109 +48,155 @@ public record ZaiConfig(
     private const int DefaultWriteTimeout = 100;
 
     /// <summary>
-    /// Gets the base URL for API endpoints with environment variable fallback.
+    /// Gets or sets the base URL for API endpoints with environment variable fallback.
     /// </summary>
-    public string BaseUrl =>
-        baseUrl ??
-        Environment.GetEnvironmentVariable(EnvBaseUrl) ??
-        Constants.ZAiBaseUrl;
+    public string BaseUrl
+    {
+        get => _baseUrl
+            ?? Environment.GetEnvironmentVariable(EnvBaseUrl)
+            ?? Constants.ZAiBaseUrl;
+        set => _baseUrl = value;
+    }
 
     /// <summary>
-    /// Gets the combined API key with environment variable fallback.
+    /// Gets or sets the combined API key with environment variable fallback.
     /// </summary>
-    public string ApiKey =>
-        !string.IsNullOrEmpty(apiKey)
-            ? apiKey
-            : Environment.GetEnvironmentVariable(EnvApiKey) ?? string.Empty;
+    public string ApiKey
+    {
+        get => _apiKey
+            ?? Environment.GetEnvironmentVariable(EnvApiKey)
+            ?? string.Empty;
+        set => _apiKey = value;
+    }
 
     /// <summary>
-    /// Gets the API ID component with environment variable fallback.
+    /// Gets or sets the API ID component with environment variable fallback.
     /// </summary>
-    public string ApiId =>
-        !string.IsNullOrEmpty(apiId) ? apiId :
-        !string.IsNullOrEmpty(ApiKey) && ApiKey.Contains('.') ? ApiKey.Split('.')[0] :
-        string.Empty;
+    public string ApiId
+    {
+        get => !string.IsNullOrEmpty(_apiId) ? _apiId :
+            !string.IsNullOrEmpty(ApiKey) && ApiKey.Contains('.') ? ApiKey.Split('.')[0] :
+            string.Empty;
+        private set => _apiId = value;
+    }
 
     /// <summary>
-    /// Gets the API secret component with environment variable fallback.
+    /// Gets or sets the API secret component with environment variable fallback.
     /// </summary>
-    public string ApiSecret =>
-        !string.IsNullOrEmpty(apiSecret) ? apiSecret :
-        !string.IsNullOrEmpty(ApiKey) && ApiKey.Contains('.') ? ApiKey.Split('.')[1] :
-        string.Empty;
+    public string ApiSecret
+    {
+        get => !string.IsNullOrEmpty(_apiSecret) ? _apiSecret :
+            !string.IsNullOrEmpty(ApiKey) && ApiKey.Contains('.') ? ApiKey.Split('.')[1] :
+            string.Empty;
+        set => _apiSecret = value;
+    }
 
     /// <summary>
-    /// Gets custom HTTP request headers.
+    /// Gets or sets custom HTTP request headers.
     /// </summary>
-    public IReadOnlyDictionary<string, string>? CustomHeaders => customHeaders;
+    public IReadOnlyDictionary<string, string>? CustomHeaders
+    {
+        get => _customHeaders;
+        set => _customHeaders = value;
+    }
 
     /// <summary>
-    /// Gets the token expiration time in milliseconds with environment variable fallback.
+    /// Gets or sets the token expiration time in milliseconds with environment variable fallback.
     /// </summary>
-    public int ExpireMillis =>
-        expireMillis ??
-        (int.TryParse(Environment.GetEnvironmentVariable(EnvExpireMillis), out var envExpire) ? envExpire : DefaultExpireMillis);
+    public int ExpireMillis
+    {
+        get => _expireMillis ??
+            (int.TryParse(Environment.GetEnvironmentVariable(EnvExpireMillis), out var envExpire) ? envExpire : DefaultExpireMillis);
+        set => _expireMillis = value;
+    }
 
     /// <summary>
-    /// Gets the JWT algorithm with environment variable fallback.
+    /// Gets or sets the JWT algorithm with environment variable fallback.
     /// </summary>
-    public string Alg =>
-        alg ??
-        Environment.GetEnvironmentVariable(EnvAlg) ?? DefaultAlg;
+    public string Alg
+    {
+        get => _alg ?? Environment.GetEnvironmentVariable(EnvAlg) ?? DefaultAlg;
+        set => _alg = value;
+    }
 
     /// <summary>
-    /// Gets the disable token cache flag with environment variable fallback.
+    /// Gets or sets the disable token cache flag with environment variable fallback.
     /// </summary>
-    public bool DisableTokenCache =>
-        disableTokenCache ??
-        (bool.TryParse(Environment.GetEnvironmentVariable(EnvDisableTokenCache), out var envDisable) ? envDisable : false);
+    public bool DisableTokenCache
+    {
+        get => _disableTokenCache ??
+            (bool.TryParse(Environment.GetEnvironmentVariable(EnvDisableTokenCache), out var envDisable) ? envDisable : false);
+        set => _disableTokenCache = value;
+    }
 
     /// <summary>
-    /// Gets the connection pool max idle connections with environment variable fallback.
+    /// Gets or sets the connection pool max idle connections with environment variable fallback.
     /// </summary>
-    public int ConnectionPoolMaxIdleConnections =>
-        connectionPoolMaxIdleConnections ??
-        (int.TryParse(Environment.GetEnvironmentVariable(EnvConnectionPoolMaxIdle), out var envMaxIdle) ? envMaxIdle : DefaultConnectionPoolMaxIdle);
+    public int ConnectionPoolMaxIdleConnections
+    {
+        get => _connectionPoolMaxIdleConnections ??
+            (int.TryParse(Environment.GetEnvironmentVariable(EnvConnectionPoolMaxIdle), out var envMaxIdle) ? envMaxIdle : DefaultConnectionPoolMaxIdle);
+        set => _connectionPoolMaxIdleConnections = value;
+    }
 
     /// <summary>
-    /// Gets the connection pool keep alive duration with environment variable fallback.
+    /// Gets or sets the connection pool keep alive duration with environment variable fallback.
     /// </summary>
-    public long ConnectionPoolKeepAliveDuration =>
-        connectionPoolKeepAliveDuration ??
-        (long.TryParse(Environment.GetEnvironmentVariable(EnvConnectionPoolKeepAlive), out var envKeepAlive) ? envKeepAlive : DefaultConnectionPoolKeepAlive);
+    public long ConnectionPoolKeepAliveDuration
+    {
+        get => _connectionPoolKeepAliveDuration ??
+            (long.TryParse(Environment.GetEnvironmentVariable(EnvConnectionPoolKeepAlive), out var envKeepAlive) ? envKeepAlive : DefaultConnectionPoolKeepAlive);
+        set => _connectionPoolKeepAliveDuration = value;
+    }
 
     /// <summary>
-    /// Gets the request timeout with environment variable fallback.
+    /// Gets or sets the request timeout with environment variable fallback.
     /// </summary>
-    public int RequestTimeOut =>
-        requestTimeOut ??
-        (int.TryParse(Environment.GetEnvironmentVariable(EnvRequestTimeout), out var envRequestTimeout) ? envRequestTimeout : DefaultRequestTimeout);
+    public int RequestTimeOut
+    {
+        get => _requestTimeOut ??
+            (int.TryParse(Environment.GetEnvironmentVariable(EnvRequestTimeout), out var envRequestTimeout) ? envRequestTimeout : DefaultRequestTimeout);
+        set => _requestTimeOut = value;
+    }
 
     /// <summary>
-    /// Gets the connect timeout with environment variable fallback.
+    /// Gets or sets the connect timeout with environment variable fallback.
     /// </summary>
-    public int ConnectTimeout =>
-        connectTimeout ??
-        (int.TryParse(Environment.GetEnvironmentVariable(EnvConnectTimeout), out var envConnectTimeout) ? envConnectTimeout : DefaultConnectTimeout);
+    public int ConnectTimeout
+    {
+        get => _connectTimeout ??
+            (int.TryParse(Environment.GetEnvironmentVariable(EnvConnectTimeout), out var envConnectTimeout) ? envConnectTimeout : DefaultConnectTimeout);
+        set => _connectTimeout = value;
+    }
 
     /// <summary>
-    /// Gets the read timeout with environment variable fallback.
+    /// Gets or sets the read timeout with environment variable fallback.
     /// </summary>
-    public int ReadTimeout =>
-        readTimeout ??
-        (int.TryParse(Environment.GetEnvironmentVariable(EnvReadTimeout), out var envReadTimeout) ? envReadTimeout : DefaultReadTimeout);
+    public int ReadTimeout
+    {
+        get => _readTimeout ??
+            (int.TryParse(Environment.GetEnvironmentVariable(EnvReadTimeout), out var envReadTimeout) ? envReadTimeout : DefaultReadTimeout);
+        set => _readTimeout = value;
+    }
 
     /// <summary>
-    /// Gets the write timeout with environment variable fallback.
+    /// Gets or sets the write timeout with environment variable fallback.
     /// </summary>
-    public int WriteTimeout =>
-        writeTimeout ??
-        (int.TryParse(Environment.GetEnvironmentVariable(EnvWriteTimeout), out var envWriteTimeout) ? envWriteTimeout : DefaultWriteTimeout);
+    public int WriteTimeout
+    {
+        get => _writeTimeout ??
+            (int.TryParse(Environment.GetEnvironmentVariable(EnvWriteTimeout), out var envWriteTimeout) ? envWriteTimeout : DefaultWriteTimeout);
+        set => _writeTimeout = value;
+    }
 
     /// <summary>
-    /// Gets the source channel identifier for request tracking.
+    /// Gets or sets the source channel identifier for request tracking.
     /// </summary>
-    public string SourceChannel => sourceChannel;
+    public string SourceChannel
+    {
+        get => _sourceChannel;
+        set => _sourceChannel = value;
+    }
 
     /// <summary>
     /// Creates a new ZaiConfig with the specified API key.
@@ -157,7 +204,7 @@ public record ZaiConfig(
     /// <param name="apiKey">Combined API key in format {apiId}.{apiSecret}</param>
     /// <returns>A new ZaiConfig instance</returns>
     /// <exception cref="ArgumentException">Thrown when the API key format is invalid</exception>
-    public static ZaiConfig WithApiKey(string apiKey)
+    public ZaiConfig WithApiKey(string apiKey)
     {
         if (string.IsNullOrEmpty(apiKey))
             throw new ArgumentException("API key cannot be null or empty", nameof(apiKey));
@@ -166,10 +213,11 @@ public record ZaiConfig(
         if (parts.Length != 2)
             throw new ArgumentException("API key must be in format {apiId}.{apiSecret}", nameof(apiKey));
 
-        return new ZaiConfig(
-            apiKey: apiKey,
-            apiId: parts[0],
-            apiSecret: parts[1]
-        );
+        ApiKey = apiKey;
+        ApiId = parts[0];
+        ApiSecret = parts[1];
+
+        return this;
+
     }
 }
