@@ -265,7 +265,7 @@ public abstract class AbstractAiClient : AbstractClientBaseService, IDisposable
         }
         catch (ZaiHttpException ex)
         {
-            HandleStreamError((IClientResponse<object>)response, ex);
+            HandleStreamError(response, ex);
         }
 
         return response;
@@ -276,9 +276,9 @@ public abstract class AbstractAiClient : AbstractClientBaseService, IDisposable
     /// </summary>
     /// <param name="response">The response to update with error information</param>
     /// <param name="ex">The exception that occurred</param>
-    private void HandleStreamError(IClientResponse<object> response, ZaiHttpException ex)
+    private void HandleStreamError<TData>(IClientResponse<TData> response, ZaiHttpException ex)
     {
-        _logger.LogError("Streaming API request faile with business error: {Exception}", ex);
+        _logger.LogError("Streaming API request failed with business error: {Exception}", ex);
         response.Code = ex.StatusCode ?? 500;
         response.Msg = "Business error";
         response.Success = false;
