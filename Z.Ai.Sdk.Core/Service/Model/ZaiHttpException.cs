@@ -1,4 +1,5 @@
 using System;
+using Z.Ai.Sdk.Core.Model;
 
 namespace Z.Ai.Sdk.Core.Service.Model;
 
@@ -17,6 +18,11 @@ public class ZaiHttpException : Exception
     /// </summary>
     public string? Code { get; }
 
+    /// <summary
+    /// ZAI error message
+    /// </summary>
+    public string Msg { get; }
+
     /// <summary>
     /// Initializes a new instance of the ZaiHttpException class.
     /// </summary>
@@ -26,6 +32,7 @@ public class ZaiHttpException : Exception
     public ZaiHttpException(string message, string? code, Exception? innerException = null)
         : base(message, innerException)
     {
+        Msg = message;
         Code = code;
         StatusCode = null;
     }
@@ -40,6 +47,7 @@ public class ZaiHttpException : Exception
     public ZaiHttpException(string message, string? code, int? statusCode, Exception? innerException = null)
         : base(message, innerException)
     {
+        Msg = message;
         Code = code;
         StatusCode = statusCode;
     }

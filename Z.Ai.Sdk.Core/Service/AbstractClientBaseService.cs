@@ -1,3 +1,7 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using Microsoft.Extensions.Logging;
+using Refit;
 using Z.Ai.Sdk.Core.Model;
 using Z.Ai.Sdk.Core.Service.Model;
 
@@ -10,6 +14,7 @@ namespace Z.Ai.Sdk.Core.Service;
 /// </summary>
 public abstract class AbstractClientBaseService
 {
+    private static readonly ILogger _logger = ZaiLogger.GetLogger<AbstractClientBaseService>();
     /// <summary>
     /// Executes a synchronous API request.
     /// </summary>
@@ -82,20 +87,71 @@ public abstract class AbstractClientBaseService
     {
         try
         {
-            var response = await apiCall();
-            return response;
+            return await apiCall();
         }
-        catch (HttpRequestException ex)
+        catch (ApiException ex)
         {
-            throw new ZaiHttpException(ex.Message, ex.StatusCode?.ToString(), ex);
+            var errorBody = ex.Content;
+            if (string.IsNullOrEmpty(errorBody))
+            {
+                throw new ZaiHttpException(ex.Message, ((int)ex.StatusCode).ToString(), (int)ex.StatusCode, ex);
+            }
+
+            try
+            {
+                var jsonNode = JsonNode.Parse(errorBody);
+                if (jsonNode?["error"] != null)
+                {
+                    var errorNode = jsonNode["error"];
+                    if (errorNode is JsonValue value && value.TryGetValue<string>(out var errorMessage))
+                    {
+                        var codeNode = jsonNode["code"]?.GetValue<string>();
+                        throw new ZaiHttpException(errorMessage, codeNode, (int)ex.StatusCode, ex);
+                    }
+                    // TODO
+                    // var error = JsonSerializer.Deserialize<ZaiError>(errorNode);
+                    // if (error != null)
+                    // {
+                    //     throw new ZaiHttpException(error, codeNode, (int)ex.StatusCode, ex);
+                    // }
+                }
+                else if (jsonNode?["msg"] != null)
+                {
+                    var msgNode = jsonNode["msg"]?.GetValue<string>();
+                    var codeNode = jsonNode["code"]?.GetValue<string>();
+                    throw new ZaiHttpException(msgNode ?? "Unknown error", codeNode, (int)ex.StatusCode, ex);
+                }
+                else if (jsonNode?["message"] != null)
+                {
+                    var msgNode = jsonNode["message"]?.GetValue<string>();
+                    var codeNode = jsonNode["code"]?.GetValue<string>();
+                    throw new ZaiHttpException(msgNode ?? "Unknown error", codeNode, (int)ex.StatusCode, ex);
+                }
+                else
+                {
+                    throw new ZaiHttpException(errorBody, null, (int)ex.StatusCode, ex);
+                }
+            }
+            catch (JsonException)
+            {
+                // The error body is not valid JSON, so we'll just use the raw string.
+                throw new ZaiHttpException(errorBody, null, (int)ex.StatusCode, ex);
+            }
+
+            throw new ZaiHttpException(ex.Message, ((int)ex.StatusCode).ToString(), (int)ex.StatusCode, ex);
         }
         catch (Exception ex) when (ex is TaskCanceledException && ex.InnerException is TimeoutException)
         {
             throw new ZaiHttpException("Request timed out", "Timeout", ex);
         }
+        catch (ZaiHttpException)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
-            throw new ZaiHttpException(ex.Message, "UnknownError", ex);
+            _logger.LogError("{Msg}", ex.Message);
+            throw;
         }
     }
 }
