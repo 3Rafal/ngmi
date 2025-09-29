@@ -54,7 +54,7 @@ public class AgentServiceTest
         InitializeAgentService();
 
         var messages = new List<AgentMessage>();
-        var userMessage = new AgentMessage { Role = "user", Content = AgentContent.FromText("Hello, please translate this to Chinese: How are you?") };
+        var userMessage = new AgentMessage { Role = "user", Content = new List<AgentContent> { AgentContent.FromText("Hello, please translate this to Chinese: How are you?") } };
         messages.Add(userMessage);
 
         var requestId = string.Format(RequestIdTemplate, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
@@ -90,7 +90,7 @@ public class AgentServiceTest
         InitializeAgentService();
 
         var messages = new List<AgentMessage>();
-        var userMessage = new AgentMessage { Role = "user", Content = AgentContent.FromText("Please translate this to Chinese: The weather is beautiful today") };
+        var userMessage = new AgentMessage { Role = "user", Content = new List<AgentContent> { AgentContent.FromText("Please translate this to Chinese: The weather is beautiful today") } };
         messages.Add(userMessage);
 
         var requestId = string.Format(RequestIdTemplate, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
@@ -260,11 +260,11 @@ public class AgentServiceTest
         var messages = new List<AgentMessage>
         {
             // First round of conversation
-            new() { Role = "user", Content = AgentContent.FromText("Please translate 'Hello' to Chinese") },
-            new() { Role = "assistant", Content = AgentContent.FromText("你好") },
+            new() { Role = "user", Content = new List<AgentContent> { AgentContent.FromText("Please translate 'Hello' to Chinese") } },
+            new() { Role = "assistant", Content = new List<AgentContent> { AgentContent.FromText("你好") } },
 
             // Second round of conversation
-            new() { Role = "user", Content = AgentContent.FromText("Now translate 'Thank you' to Chinese") }
+            new() { Role = "user", Content = new List<AgentContent> { AgentContent.FromText("Now translate 'Thank you' to Chinese") } }
         };
 
         var requestId = string.Format(RequestIdTemplate, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
@@ -298,7 +298,7 @@ public class AgentServiceTest
         InitializeAgentService();
 
         var messages = new List<AgentMessage>();
-        var userMessage = new AgentMessage { Role = "user", Content = AgentContent.FromText("Translate this text") };
+        var userMessage = new AgentMessage { Role = "user", Content = new List<AgentContent> { AgentContent.FromText("Translate this text") } };
         messages.Add(userMessage);
 
         var requestId = string.Format(RequestIdTemplate, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());

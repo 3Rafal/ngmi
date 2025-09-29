@@ -19,13 +19,13 @@ public static class Constants
     /// Base URL for the ZHIPU AI OpenAPI service. All API requests will be made to
     /// endpoints under this base URL.
     /// </summary>
-    public const string ZhipuAiBaseUrl = "https://open.bigmodel.cn/api/paas/v4/";
+    public const string ZhipuAiBaseUrl = "https://open.bigmodel.cn/api/paas/v4";
 
     /// <summary>
     /// Base URL for the Z.AI OpenAPI service. All API requests will be made to endpoints
     /// under this base URL.
     /// </summary>
-    public const string ZAiBaseUrl = "https://api.z.ai/api/paas/v4/";
+    public const string ZAiBaseUrl = "https://api.z.ai/api/paas/v4";
 
     // =============================================================================
     // Text Generation Models
