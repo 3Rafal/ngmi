@@ -69,8 +69,8 @@ public class TokenManager(ICache cache)
         var payload = new Dictionary<string, object>
         {
             { "api_key", config.ApiId },
-            { "exp", exp.ToString() },
-            { "timestamp", timestamp.ToString() }
+            { "exp", exp },
+            { "timestamp", timestamp }
         };
 
         var extraHeaders = new Dictionary<string, object>

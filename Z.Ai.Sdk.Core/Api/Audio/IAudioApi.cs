@@ -20,21 +20,18 @@ public interface IAudioApi
     /// <summary>
     /// Audio customization with voice cloning data.
     /// </summary>
-    [Multipart]
     [Post("/audio/customization")]
-    Task<Stream> CreateCustomSpeech([Body] MultipartFormDataContent request);
+    Task<Stream> CreateCustomSpeech([Body] HttpContent request);
 
     /// <summary>
     /// Non-streaming transcription.
     /// </summary>
-    [Multipart]
     [Post("/audio/transcriptions")]
-    Task<AudioTranscriptionResult> CreateTranscription([Body] MultipartFormDataContent request);
+    Task<AudioTranscriptionResult> CreateTranscription([Body] HttpContent request);
 
     /// <summary>
     /// Streaming transcription.
     /// </summary>
-    [Multipart]
     [Post("/audio/transcriptions")]
-    Task<Stream> CreateTranscriptionStream([Body] MultipartFormDataContent request);
+    Task<Stream> CreateTranscriptionStream([Body] HttpContent request);
 }
