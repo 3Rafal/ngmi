@@ -5,9 +5,7 @@ namespace Z.Ai.Sdk.Core.Service.Assistant.Message;
 /// <summary>
 /// Base class for assistant message content types.
 /// </summary>
-[JsonPolymorphic]
-[JsonDerivedType(typeof(AssistantTextContentBlock), "content")]
-[JsonDerivedType(typeof(AssistantToolsDeltaBlock), "tool_calls")]
+[JsonConverter(typeof(AssistantMessageContentJsonConverter))]
 public abstract record AssistantMessageContent
 {
 }

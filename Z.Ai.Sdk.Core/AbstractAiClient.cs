@@ -6,6 +6,8 @@ using Z.Ai.Sdk.Core.Service;
 using Z.Ai.Sdk.Core.Service.Model;
 using Z.Ai.Sdk.Core.Service.Agents;
 using Z.Ai.Sdk.Core.Service.Assistant;
+using Z.Ai.Sdk.Core.Service.Assistant.Message;
+using Z.Ai.Sdk.Core.Service.Assistant.Message.Tools;
 using Z.Ai.Sdk.Core.Service.Audio;
 using Z.Ai.Sdk.Core.Service.Batches;
 using Z.Ai.Sdk.Core.Service.Chat;
@@ -256,7 +258,7 @@ public abstract class AbstractAiClient : AbstractClientBaseService, IDisposable
         try
         {
             var stream = await Execute(() => apiCall);
-            var streamItems = ParseSseStream<TStream>(stream, streamItemType);
+            var streamItems = ParseSseStream<TStream>(stream, streamItemType, _jsonSerializerOptions);
 
             response.Stream = streamItems;
             response.Code = 200;
@@ -318,14 +320,8 @@ public abstract class AbstractAiClient : AbstractClientBaseService, IDisposable
     /// <param name="stream">The input stream containing SSE data</param>
     /// <param name="itemType">The type of each stream item</param>
     /// <returns>An async enumerable of deserialized items</returns>
-    private static async IAsyncEnumerable<T> ParseSseStream<T>(Stream stream, Type itemType)
+    private static async IAsyncEnumerable<T> ParseSseStream<T>(Stream stream, Type itemType, JsonSerializerOptions options)
     {
-        var options = new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            PropertyNameCaseInsensitive = true
-        };
-
         using var reader = new StreamReader(stream);
         while (!reader.EndOfStream)
         {
@@ -367,11 +363,16 @@ public abstract class AbstractAiClient : AbstractClientBaseService, IDisposable
 
     private static JsonSerializerOptions CreateJsonSerializerOptions()
     {
-        return new JsonSerializerOptions
+        var options = new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             PropertyNameCaseInsensitive = true
         };
+
+        options.Converters.Add(new AssistantMessageContentJsonConverter());
+        options.Converters.Add(new AssistantToolsTypeJsonConverter());
+
+        return options;
     }
 
     /// <summary>

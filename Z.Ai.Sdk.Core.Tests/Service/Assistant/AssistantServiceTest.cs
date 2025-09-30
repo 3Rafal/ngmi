@@ -1,13 +1,12 @@
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
 using Z.Ai.Sdk.Core.Service.Assistant;
 using Z.Ai.Sdk.Core.Service.Assistant.Conversation;
 using Z.Ai.Sdk.Core.Service.Assistant.Message;
 using Z.Ai.Sdk.Core.Service.Assistant.QuerySupport;
 using Z.Ai.Sdk.Core.Config;
 
-namespace Z.Ai.Sdk.Core.Tests.Service.Agents;
+namespace Z.Ai.Sdk.Core.Tests.Service.Assistant;
 
 /// <summary>
 /// AssistantService test class for testing various functionalities of AssistantService and

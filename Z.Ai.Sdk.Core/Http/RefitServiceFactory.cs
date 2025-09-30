@@ -2,6 +2,8 @@ using Refit;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Z.Ai.Sdk.Core.Config;
+using Z.Ai.Sdk.Core.Service.Assistant.Message;
+using Z.Ai.Sdk.Core.Service.Assistant.Message.Tools;
 
 namespace Z.Ai.Sdk.Core.Http;
 
@@ -41,15 +43,19 @@ public static class RefitServiceFactory
     /// <returns>Refit settings with proper JSON configuration</returns>
     private static RefitSettings GetRefitSettings()
     {
+        var options = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            PropertyNameCaseInsensitive = true,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        };
+
+        options.Converters.Add(new AssistantMessageContentJsonConverter());
+        options.Converters.Add(new AssistantToolsTypeJsonConverter());
+
         return new RefitSettings
         {
-            ContentSerializer = new SystemTextJsonContentSerializer(
-                new JsonSerializerOptions
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                    PropertyNameCaseInsensitive = true,
-                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-                })
+            ContentSerializer = new SystemTextJsonContentSerializer(options)
         };
     }
 
