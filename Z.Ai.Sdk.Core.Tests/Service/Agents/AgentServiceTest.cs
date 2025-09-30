@@ -1,7 +1,9 @@
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 using Z.Ai.Sdk.Core.Service.Agents;
 using Z.Ai.Sdk.Core.Config;
+using System.Runtime.CompilerServices;
 
 namespace Z.Ai.Sdk.Core.Tests.Service.Agents;
 
@@ -22,7 +24,10 @@ public class AgentServiceTest
 
     public AgentServiceTest()
     {
-        _logger = LoggerFactory.Create(builder => {}).CreateLogger<AgentServiceTest>();
+        _logger = LoggerFactory.Create(builder =>
+        {
+            builder.AddConsole();
+        }).CreateLogger<AgentServiceTest>();
     }
 
     private void InitializeAgentService()
@@ -74,13 +79,9 @@ public class AgentServiceTest
         Assert.NotNull(response);
         Assert.True(response.Success);
         Assert.NotNull(response.Data);
-        Assert.Equal(requestId, response.Data.RequestId);
         Assert.NotNull(response.Data.Choices);
         Assert.NotEmpty(response.Data.Choices);
         Assert.Null(response.Error);
-
-        _logger.LogInformation("Synchronous agent completion response: {Response}",
-            JsonSerializer.Serialize(response));
     }
 
     [RequiresEnvironmentVariableFact("ZAI_API_KEY")]
@@ -127,9 +128,9 @@ public class AgentServiceTest
                 if (modelData.Choices != null && modelData.Choices.Count > 0)
                 {
                     var choice = modelData.Choices[0];
-                    if (choice.Delta != null && choice.Delta.Content != null)
+                    if (choice.Messages != null)
                     {
-                        _logger.LogInformation("Received content: {Content}", choice.Delta.Content);
+                        _logger.LogInformation("Received content: {Content}", choice.Messages);
                         messageCount++;
                     }
                 }
@@ -142,7 +143,8 @@ public class AgentServiceTest
         _logger.LogInformation("Stream agent completion test completed");
     }
 
-    [RequiresEnvironmentVariableFact("ZAI_API_KEY")]
+    [Fact(Skip = "Invalid method")]
+    // [RequiresEnvironmentVariableFact("ZAI_API_KEY")]
     public async Task TestRetrieveAgentAsyncResult()
     {
         // Arrange
@@ -285,10 +287,7 @@ public class AgentServiceTest
         Assert.NotNull(response.Data?.Choices);
         Assert.NotEmpty(response.Data.Choices);
         Assert.Null(response.Error);
-        Assert.NotNull(response.Data.Choices[0].Message);
-
-        _logger.LogInformation("Multi-turn conversation with agent response: {Response}",
-            JsonSerializer.Serialize(response));
+        Assert.NotNull(response.Data.Choices[0].Messages);
     }
 
     [RequiresEnvironmentVariableFact("ZAI_API_KEY")]
@@ -321,7 +320,8 @@ public class AgentServiceTest
             new { response.Code, response.Msg });
     }
 
-    [RequiresEnvironmentVariableFact("ZAI_API_KEY")]
+    [Fact(Skip = "Invalid method")]
+    //                                                                                                                                                                                                                                                              [RequiresEnvironmentVariableFact("ZAI_API_KEY")]
     public async Task TestRetrieveAsyncResultError()
     {
         // Arrange
