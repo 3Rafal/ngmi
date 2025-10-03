@@ -1,4 +1,5 @@
 using System.Text;
+using System.IO;
 
 namespace Z.Ai.Sdk.Core.Service.Model;
 
@@ -8,7 +9,6 @@ namespace Z.Ai.Sdk.Core.Service.Model;
 public class HttpxBinaryResponseContent : IDisposable
 {
     private readonly HttpResponseMessage _response;
-    private readonly Stream _contentStream;
     private bool _disposed = false;
 
     /// <summary>
@@ -18,12 +18,7 @@ public class HttpxBinaryResponseContent : IDisposable
     public HttpxBinaryResponseContent(HttpResponseMessage response)
     {
         _response = response ?? throw new ArgumentException("Response cannot be null");
-        _contentStream = response.Content.ReadAsStream();
-
-        if (_contentStream == null)
-        {
-            throw new InvalidOperationException("Response content stream cannot be null");
-        }
+        // Stream will be accessed on demand from response content
     }
 
     /// <summary>
@@ -32,10 +27,8 @@ public class HttpxBinaryResponseContent : IDisposable
     /// <returns>Content as byte array</returns>
     public async Task<byte[]> GetContentAsync()
     {
-        _contentStream.Seek(0, SeekOrigin.Begin);
-        using var memoryStream = new MemoryStream();
-        await _contentStream.CopyToAsync(memoryStream);
-        return memoryStream.ToArray();
+        // For HTTP response streams, read the response content directly
+        return await _response.Content.ReadAsByteArrayAsync();
     }
 
     /// <summary>
@@ -44,9 +37,7 @@ public class HttpxBinaryResponseContent : IDisposable
     /// <returns>Content as string</returns>
     public async Task<string> GetTextAsync()
     {
-        _contentStream.Seek(0, SeekOrigin.Begin);
-        using var reader = new StreamReader(_contentStream);
-        return await reader.ReadToEndAsync();
+        return await _response.Content.ReadAsStringAsync();
     }
 
     /// <summary>
@@ -66,18 +57,18 @@ public class HttpxBinaryResponseContent : IDisposable
     /// <returns>Iterator of byte arrays</returns>
     public async IAsyncEnumerable<byte[]> IterBytesAsync(int chunkSize)
     {
-        _contentStream.Seek(0, SeekOrigin.Begin);
-        var buffer = new byte[chunkSize];
+        var allBytes = await GetContentAsync();
+        var offset = 0;
 
-        while (true)
+        while (offset < allBytes.Length)
         {
-            int bytesRead = await _contentStream.ReadAsync(buffer, 0, chunkSize);
-            if (bytesRead == 0)
-                yield break;
+            var remainingBytes = allBytes.Length - offset;
+            var currentChunkSize = Math.Min(chunkSize, remainingBytes);
+            var chunk = new byte[currentChunkSize];
+            Array.Copy(allBytes, offset, chunk, 0, currentChunkSize);
 
-            var chunk = new byte[bytesRead];
-            Array.Copy(buffer, chunk, bytesRead);
             yield return chunk;
+            offset += currentChunkSize;
         }
     }
 
@@ -88,16 +79,17 @@ public class HttpxBinaryResponseContent : IDisposable
     /// <returns>Iterator of strings</returns>
     public async IAsyncEnumerable<string> IterTextAsync(int chunkSize)
     {
-        _contentStream.Seek(0, SeekOrigin.Begin);
-        var buffer = new byte[chunkSize];
+        var allBytes = await GetContentAsync();
+        var allText = Encoding.UTF8.GetString(allBytes);
+        var offset = 0;
 
-        while (true)
+        while (offset < allText.Length)
         {
-            int bytesRead = await _contentStream.ReadAsync(buffer, 0, chunkSize);
-            if (bytesRead == 0)
-                yield break;
+            var remainingChars = allText.Length - offset;
+            var currentChunkSize = Math.Min(chunkSize, remainingChars);
 
-            yield return Encoding.UTF8.GetString(buffer, 0, bytesRead);
+            yield return allText.Substring(offset, currentChunkSize);
+            offset += currentChunkSize;
         }
     }
 
@@ -107,9 +99,8 @@ public class HttpxBinaryResponseContent : IDisposable
     /// <param name="filePath">Path to the output file</param>
     public async Task WriteToFileAsync(string filePath)
     {
-        _contentStream.Seek(0, SeekOrigin.Begin);
-        using var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
-        await _contentStream.CopyToAsync(fileStream);
+        var contentBytes = await GetContentAsync();
+        await System.IO.File.WriteAllBytesAsync(filePath, contentBytes);
     }
 
     /// <summary>
@@ -119,17 +110,11 @@ public class HttpxBinaryResponseContent : IDisposable
     /// <param name="chunkSize">Size of each chunk</param>
     public async Task StreamToFileAsync(string filePath, int chunkSize)
     {
-        _contentStream.Seek(0, SeekOrigin.Begin);
         using var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
-        var buffer = new byte[chunkSize];
 
-        while (true)
+        await foreach (var chunk in IterBytesAsync(chunkSize))
         {
-            int bytesRead = await _contentStream.ReadAsync(buffer, 0, chunkSize);
-            if (bytesRead == 0)
-                break;
-
-            await fileStream.WriteAsync(buffer, 0, bytesRead);
+            await fileStream.WriteAsync(chunk, 0, chunk.Length);
         }
     }
 
@@ -140,7 +125,6 @@ public class HttpxBinaryResponseContent : IDisposable
     {
         if (!_disposed)
         {
-            _contentStream?.Dispose();
             _response?.Dispose();
             _disposed = true;
         }

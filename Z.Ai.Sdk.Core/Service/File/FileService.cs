@@ -1,14 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Threading.Tasks;
-using Z.Ai.Sdk.Core;
+using System.Text.Json;
 using Z.Ai.Sdk.Core.Api.File;
-using Z.Ai.Sdk.Core.Http;
-using ZAiFileInfo = Z.Ai.Sdk.Core.Service.Model.FileInfo;
+using Z.Ai.Sdk.Core.Model;
 using Z.Ai.Sdk.Core.Service.Model;
 
 namespace Z.Ai.Sdk.Core.Service.File;
@@ -29,7 +22,7 @@ public class FileService : IFileService
     public FileService(AbstractAiClient client)
     {
         _client = client;
-        _fileApi = RefitServiceFactory.CreateService<IFileApi>(client.HttpClient);
+        _fileApi = client.CreateRefitService<IFileApi>();
     }
 
     /// <summary>
@@ -48,7 +41,7 @@ public class FileService : IFileService
             throw new ArgumentException("request path cannot be null", nameof(request.FilePath));
         }
 
-        var fileInfo = new FileInfo(request.FilePath);
+        var fileInfo = new System.IO.FileInfo(request.FilePath);
         if (!fileInfo.Exists)
         {
             throw new FileNotFoundException("file not found", request.FilePath);
@@ -59,7 +52,7 @@ public class FileService : IFileService
             using var multipartContent = new MultipartFormDataContent();
 
             // Add file content
-            var fileContent = new StreamContent(File.OpenRead(request.FilePath));
+            var fileContent = new StreamContent(System.IO.File.OpenRead(request.FilePath));
             fileContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
             multipartContent.Add(fileContent, "file", fileInfo.Name);
 
@@ -71,13 +64,28 @@ public class FileService : IFileService
             {
                 foreach (var kvp in request.ExtraJson)
                 {
-                    if (kvp.Value is string || kvp.Value is int || kvp.Value is bool || kvp.Value is double)
+                    if (kvp.Value is JsonElement element)
+                    {
+                        switch (element.ValueKind)
+                        {
+                            case JsonValueKind.String:
+                                multipartContent.Add(new StringContent(element.GetString() ?? string.Empty), kvp.Key);
+                                break;
+                            case JsonValueKind.Number:
+                                multipartContent.Add(new StringContent(element.GetRawText()), kvp.Key);
+                                break;
+                            case JsonValueKind.True:
+                            case JsonValueKind.False:
+                                multipartContent.Add(new StringContent(element.GetBoolean().ToString()), kvp.Key);
+                                break;
+                            default:
+                                multipartContent.Add(new StringContent(element.ToString()), kvp.Key);
+                                break;
+                        }
+                    }
+                    else
                     {
                         multipartContent.Add(new StringContent(kvp.Value.ToString() ?? string.Empty), kvp.Key);
-                    }
-                    else if (kvp.Value is DateTime date)
-                    {
-                        multipartContent.Add(new StringContent(date.Ticks.ToString()), kvp.Key);
                     }
                 }
             }
@@ -98,11 +106,10 @@ public class FileService : IFileService
                 Code = 500,
                 Msg = $"File upload failed: {ex.Message}",
                 Success = false,
-                Error = new ChatError
-                {
-                    Message = ex.Message,
-                    Type = "file_upload_error"
-                }
+                Error = new ChatError(
+                    Code: 500,
+                    Message: ex.Message
+                )
             };
         }
     }
@@ -137,11 +144,10 @@ public class FileService : IFileService
                 Code = 500,
                 Msg = $"File deletion failed: {ex.Message}",
                 Success = false,
-                Error = new ChatError
-                {
-                    Message = ex.Message,
-                    Type = "file_delete_error"
-                }
+                Error = new ChatError(
+                    Code: 500,
+                    Message: ex.Message
+                )
             };
         }
     }
@@ -181,11 +187,10 @@ public class FileService : IFileService
                 Code = 500,
                 Msg = $"File list retrieval failed: {ex.Message}",
                 Success = false,
-                Error = new ChatError
-                {
-                    Message = ex.Message,
-                    Type = "file_list_error"
-                }
+                Error = new ChatError(
+                    Code: 500,
+                    Message: ex.Message
+                )
             };
         }
     }

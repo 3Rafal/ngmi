@@ -27,7 +27,7 @@ public interface IFileApi
     /// <param name="fileId">Unique identifier of the file to delete</param>
     /// <returns>Confirmation of file deletion with status information</returns>
     [Delete("/files/{fileId}")]
-    Task<FileDeleted> DeleteFile([AliasAs("file_id")] string fileId);
+    Task<FileDeleted> DeleteFile(string fileId);
 
     /// <summary>
     /// Query and list files with filtering options
@@ -53,5 +53,5 @@ public interface IFileApi
     /// <returns>Streaming file content in original format</returns>
     [Headers("Accept: application/octet-stream")]
     [Get("/files/{fileId}/content")]
-    Task<HttpResponseMessage> GetFileContent([AliasAs("file_id")] string fileId);
+    Task<HttpResponseMessage> GetFileContent(string fileId);
 }
