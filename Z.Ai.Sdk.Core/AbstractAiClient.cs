@@ -30,7 +30,7 @@ public abstract class AbstractAiClient : AbstractClientBaseService, IDisposable
     private IAgentService? _agentService;
     private IAssistantService? _assistantService;
     private IFileService? _fileService;
-    private IVideoService? _videoService;
+    private IVideosService? _videoService;
 
     /// <summary>
     /// Initializes a new instance of the AbstractAiClient class.
@@ -80,7 +80,7 @@ public abstract class AbstractAiClient : AbstractClientBaseService, IDisposable
     /// <summary>
     /// Gets the videos service for video processing.
     /// </summary>
-    public IVideoService Videos() => GetOrCreateService(ref _videoService, () => new VideoService(this));
+    public IVideosService Videos() => GetOrCreateService(ref _videoService, () => new VideosService(this));
 
     // Helper method for thread-safe service creation
     private static T GetOrCreateService<T>(ref T? serviceField, Func<T> factory) where T : class
