@@ -8,7 +8,6 @@ using Z.Ai.Sdk.Core.Service.Agents;
 using Z.Ai.Sdk.Core.Service.Assistant;
 using Z.Ai.Sdk.Core.Service.Assistant.Message;
 using Z.Ai.Sdk.Core.Service.Assistant.Message.Tools;
-using Z.Ai.Sdk.Core.Service.Audio;
 using Z.Ai.Sdk.Core.Service.Batches;
 using Z.Ai.Sdk.Core.Service.Chat;
 using Z.Ai.Sdk.Core.Service.Embedding;
@@ -36,7 +35,6 @@ public abstract class AbstractAiClient : AbstractClientBaseService, IDisposable
     // Service instances - lazily initialized for thread safety and performance
     private IAgentService? _agentService;
     private IAssistantService? _assistantService;
-    private IAudioService? _audioService;
     private IBatchesService? _batchesService;
     private IChatService? _chatService;
     private IEmbeddingService? _embeddingService;
@@ -86,11 +84,6 @@ public abstract class AbstractAiClient : AbstractClientBaseService, IDisposable
     /// Gets the assistant service for AI assistant management.
     /// </summary>
     public IAssistantService Assistants() => GetOrCreateService(ref _assistantService, () => new AssistantService(this));
-
-    /// <summary>
-    /// Gets the audio service for audio processing.
-    /// </summary>
-    public IAudioService Audio() => GetOrCreateService(ref _audioService, () => new AudioService(this));
 
     /// <summary>
     /// Gets the batch service for batch processing.

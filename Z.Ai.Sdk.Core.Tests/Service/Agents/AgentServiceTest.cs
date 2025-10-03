@@ -143,43 +143,6 @@ public class AgentServiceTest
         _logger.LogInformation("Stream agent completion test completed");
     }
 
-    [Fact(Skip = "Invalid method")]
-    // [RequiresEnvironmentVariableFact("ZAI_API_KEY")]
-    public async Task TestRetrieveAgentAsyncResult()
-    {
-        // Arrange
-        InitializeAgentService();
-
-        var taskId = "test-task-id-" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-        var requestId = string.Format(RequestIdTemplate, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
-
-        var retrieveParams = new AgentAsyncResultRetrieveParams
-        {
-            TaskId = taskId,
-            AgentId = TestAgentId,
-            RequestId = requestId
-        };
-
-        // Act
-        var response = await _agentService!.RetrieveAgentAsyncResultAsync(retrieveParams);
-
-        // Assert
-        Assert.NotNull(response);
-
-        // Note: Since this is a test with a mock task ID, we expect it to handle the
-        // error gracefully
-        try
-        {
-            _logger.LogInformation("Retrieve agent async result: {Result}", response);
-        }
-        catch (Exception e)
-        {
-            // Expected for non-existent task ID
-            _logger.LogInformation("Expected error for non-existent task ID: {Message}", e.Message);
-            Assert.Contains("task", e.Message, StringComparison.OrdinalIgnoreCase);
-        }
-    }
-
     [Fact]
     public async Task TestValidation_NullRequest()
     {
@@ -318,30 +281,5 @@ public class AgentServiceTest
         Assert.NotNull(response);
         _logger.LogInformation("Agent completion with custom variables response: {Response}",
             new { response.Code, response.Msg });
-    }
-
-    [Fact(Skip = "Invalid method")]
-    //                                                                                                                                                                                                                                                              [RequiresEnvironmentVariableFact("ZAI_API_KEY")]
-    public async Task TestRetrieveAsyncResultError()
-    {
-        // Arrange
-        InitializeAgentService();
-
-        var retrieveParams = new AgentAsyncResultRetrieveParams
-        {
-            TaskId = "mock-task-id-" + DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
-            AgentId = "non-existent-agent"
-        };
-
-        // Act
-        var responseTask = _agentService!.RetrieveAgentAsyncResultAsync(retrieveParams);
-
-        // Assert
-        Assert.NotNull(responseTask);
-
-        // Expect an error when trying to retrieve non-existent task
-        var exception = await Assert.ThrowsAsync<Exception>(async () => await responseTask);
-        _logger.LogInformation("Expected error for non-existent task: {Message}", exception.Message);
-        Assert.Contains("task", exception.Message, StringComparison.OrdinalIgnoreCase);
     }
 }
