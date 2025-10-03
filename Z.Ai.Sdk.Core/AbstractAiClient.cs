@@ -8,14 +8,8 @@ using Z.Ai.Sdk.Core.Service.Agents;
 using Z.Ai.Sdk.Core.Service.Assistant;
 using Z.Ai.Sdk.Core.Service.Assistant.Message;
 using Z.Ai.Sdk.Core.Service.Assistant.Message.Tools;
-using Z.Ai.Sdk.Core.Service.Batches;
-using Z.Ai.Sdk.Core.Service.Chat;
-using Z.Ai.Sdk.Core.Service.Embedding;
 using Z.Ai.Sdk.Core.Service.File;
-using Z.Ai.Sdk.Core.Service.Images;
 using Z.Ai.Sdk.Core.Service.Videos;
-using Z.Ai.Sdk.Core.Service.VoiceClone;
-using Z.Ai.Sdk.Core.Service.WebSearch;
 using Microsoft.Extensions.Logging;
 
 namespace Z.Ai.Sdk.Core;
@@ -35,15 +29,8 @@ public abstract class AbstractAiClient : AbstractClientBaseService, IDisposable
     // Service instances - lazily initialized for thread safety and performance
     private IAgentService? _agentService;
     private IAssistantService? _assistantService;
-    private IBatchesService? _batchesService;
-    private IChatService? _chatService;
-    private IEmbeddingService? _embeddingService;
     private IFileService? _fileService;
-    private IImageService? _imageService;
     private IVideoService? _videoService;
-    private IVoiceCloneService? _voiceCloneService;
-    private IWebSearchService? _webSearchService;
-
 
     /// <summary>
     /// Initializes a new instance of the AbstractAiClient class.
@@ -86,44 +73,14 @@ public abstract class AbstractAiClient : AbstractClientBaseService, IDisposable
     public IAssistantService Assistants() => GetOrCreateService(ref _assistantService, () => new AssistantService(this));
 
     /// <summary>
-    /// Gets the batch service for batch processing.
-    /// </summary>
-    public IBatchesService Batches() => GetOrCreateService(ref _batchesService, () => new BatchesService(this));
-
-    /// <summary>
-    /// Gets the chat service for conversational AI.
-    /// </summary>
-    public IChatService Chat() => GetOrCreateService(ref _chatService, () => new ChatService(this));
-
-    /// <summary>
-    /// Gets the embedding service for text embeddings.
-    /// </summary>
-    public IEmbeddingService Embeddings() => GetOrCreateService(ref _embeddingService, () => new EmbeddingService(this));
-
-    /// <summary>
     /// Gets the file service for file management.
     /// </summary>
     public IFileService Files() => GetOrCreateService(ref _fileService, () => new FileService(this));
 
     /// <summary>
-    /// Gets the image service for image processing.
-    /// </summary>
-    public IImageService GetImages() => GetOrCreateService(ref _imageService, () => new ImageService(this));
-
-    /// <summary>
     /// Gets the videos service for video processing.
     /// </summary>
     public IVideoService Videos() => GetOrCreateService(ref _videoService, () => new VideoService(this));
-
-    /// <summary>
-    /// Gets the voice clone service for voice cloning.
-    /// </summary>
-    public IVoiceCloneService VoiceClone() => GetOrCreateService(ref _voiceCloneService, () => new VoiceCloneService(this));
-
-    /// <summary>
-    /// Gets the web search service for internet search.
-    /// </summary>
-    public IWebSearchService WebSearch() => GetOrCreateService(ref _webSearchService, () => new WebSearchService(this));
 
     // Helper method for thread-safe service creation
     private static T GetOrCreateService<T>(ref T? serviceField, Func<T> factory) where T : class
